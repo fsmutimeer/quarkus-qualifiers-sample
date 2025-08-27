@@ -9,10 +9,10 @@ import com.teknixor.qualifier.PushNotificationQualifier;
 import com.teknixor.qualifier.SmsNotificationQualifier;
 import com.teknixor.service.NotificationService;
 
-import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -43,9 +43,14 @@ public class NotificationResource {
         this.pushNotificationService = pushNotificationService;
     }
 
+    @GET
+    @Path("/health")
+    public Response health() {
+        return Response.ok("Notification Service is up and running").build();
+    }
+
     @POST
     @Path("/email")
-    @RunOnVirtualThread
     public Uni<ApiRespnse> sendEmailNotification(MessageRequest request) {
         return emailService.send(request.message())
                 .map(response -> new ApiRespnse(Response.Status.OK.getStatusCode(), response));
@@ -54,7 +59,6 @@ public class NotificationResource {
 
     @POST
     @Path("/app")
-    @RunOnVirtualThread
     public Uni<ApiRespnse> sendAppNotification(MessageRequest request) {
         return appService.send(request.message())
                 .map(response -> new ApiRespnse(Response.Status.OK.getStatusCode(), response));
@@ -62,7 +66,6 @@ public class NotificationResource {
 
     @POST
     @Path("/google-alert")
-    @RunOnVirtualThread
     public Uni<ApiRespnse> sendGoogleAlertNotification(MessageRequest request) {
         return googleAlertsService.send(request.message())
                 .map(response -> new ApiRespnse(Response.Status.OK.getStatusCode(), response));
@@ -70,7 +73,6 @@ public class NotificationResource {
 
     @POST
     @Path("/sms")
-    @RunOnVirtualThread
     public Uni<ApiRespnse> sendSmsNotification(MessageRequest request) {
         return smsService.send(request.message())
                 .map(response -> new ApiRespnse(Response.Status.OK.getStatusCode(), response));
@@ -78,7 +80,6 @@ public class NotificationResource {
 
     @POST
     @Path("/push")
-    @RunOnVirtualThread
     public Uni<ApiRespnse> sendPushNotification(MessageRequest request) {
         return pushNotificationService.send(request.message())
                 .map(response -> new ApiRespnse(Response.Status.OK.getStatusCode(), response));
